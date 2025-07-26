@@ -1,0 +1,3 @@
+watza_split_view_homepage:
+    path:     /watza_split_view
+    defaults: { _controller: Watza\SplitViewBundle\Controller\DefaultController::indexAction }
