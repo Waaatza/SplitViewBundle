@@ -37,68 +37,63 @@ pimcore.object.splitview = Class.create({
     },
 
     waitForEditors: function (callback) {
-    const isReady = (tab) => {
-        const el = tab.getEl()?.dom;
-        if (!el) return false;
+        const isReady = (tab) => {
+            const el = tab.getEl()?.dom;
+            if (!el) return false;
 
-        return el.querySelector(
-            ".objectlayout_element_Layout, " +
-            ".objectlayout_element_tabpanel, " +
-            ".objectlayout_element_panel, " +
-            ".objectlayout_element_general"
-        );
-    };
+            return el.querySelector(
+                ".objectlayout_element_Layout, " +
+                ".objectlayout_element_tabpanel, " +
+                ".objectlayout_element_panel, " +
+                ".objectlayout_element_general"
+            );
+        };
 
-    const check = () => {
-        let leftReady  = isReady(this.leftTab);
-        let rightReady = isReady(this.rightTab);
+        const check = () => {
+            let leftReady  = isReady(this.leftTab);
+            let rightReady = isReady(this.rightTab);
 
-        if (leftReady && rightReady) {
-            console.log("[Splitview] ✅ Beide React-Editoren sind jetzt gerendert");
-            callback();
-        } else {
-            console.log("[Splitview] ⏳ Warte weiter auf React-Editor Rendering …");
-            Ext.defer(check, 300);
-        }
-    };
-
-    check();
-},
-
+            if (leftReady && rightReady) {
+                console.log("[Splitview] ✅ Beide React-Editoren sind jetzt gerendert");
+                callback();
+            } else {
+                console.log("[Splitview] ⏳ Warte weiter auf React-Editor Rendering …");
+                Ext.defer(check, 300);
+            }
+        };
+        check();
+    },
 
     findEditorLayout: function(tab) {
-    if (!tab || !tab.items || tab.items.length === 0) {
-        console.warn("[Splitview] ❌ Kein gültiger Tab oder keine Items:", tab);
-        return null;
-    }
+        if (!tab || !tab.items || tab.items.length === 0) {
+            console.warn("[Splitview] ❌ Kein gültiger Tab oder keine Items:", tab);
+            return null;
+        }
 
-    // ✅ Toolbar = immer erstes Child
-    let toolbarPanel = tab.items.getAt(0);
-    console.log("[Splitview] ✅ Toolbar erkannt:", toolbarPanel?.id);
+        let toolbarPanel = tab.items.getAt(0);
+        console.log("[Splitview] ✅ Toolbar erkannt:", toolbarPanel?.id);
 
-    // ✅ Editor = alles danach
-    let editorPanel = null;
-    if (tab.items.length > 1) {
-        editorPanel = tab.items.getAt(1);
-        console.log("[Splitview] ✅ Editor-Panel erkannt:", editorPanel?.id);
-    }
+        let editorPanel = null;
+        if (tab.items.length > 1) {
+            editorPanel = tab.items.getAt(1);
+            console.log("[Splitview] ✅ Editor-Panel erkannt:", editorPanel?.id);
+        }
 
-    // ✅ Wrapper-Panel mit Toolbar + Editor
-    let wrapperItems = [];
-    if (toolbarPanel) wrapperItems.push(toolbarPanel);
-    if (editorPanel) wrapperItems.push(editorPanel);
+        let wrapperItems = [];
+        if (toolbarPanel) wrapperItems.push(toolbarPanel);
+        if (editorPanel) wrapperItems.push(editorPanel);
 
-    let wrapper = new Ext.Panel({
-        layout: {
-            type: "vbox",
-            align: "stretch"
-        },
-        items: wrapperItems
-    });
+        let wrapper = new Ext.Panel({
+            layout: {
+                type: "vbox",
+                align: "stretch"
+            },
+            items: wrapperItems
+        });
 
-    console.log("[Splitview] 🎯 Wrapper gebaut mit", wrapperItems.length, "Element(en)");
-    return wrapper;
-},
+        console.log("[Splitview] 🎯 Wrapper gebaut mit", wrapperItems.length, "Element(en)");
+        return wrapper;
+    },
 
     buildSplitview: function () {
         console.log("[Splitview] Beide Tabs geladen → baue Splitview…");
