@@ -2,7 +2,7 @@
   "name": "watza/splitviewbundle",
   "description": "Provides Splitscreen editing for DataObjects",
   "type": "pimcore-bundle",
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "autoload": {
     "psr-4": {
       "Watza\\SplitViewBundle\\": "src/"
