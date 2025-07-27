@@ -151,7 +151,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
                 Ext.defer(() => {
                     console.log("[DEBUG] doLayout nach Close");
-                    mainPanel.doLayout();
+                    mainPanel.updateLayout();
                 }, 200);
             });
         }, 200);
