@@ -155,5 +155,4 @@ pimcore.object.splitview = Class.create({
 
         console.log("[Splitview] ✅ Splitview aktiv & Layout gestretcht");
     }
-
 });

@@ -8,3 +8,12 @@ Prerequisites:
 
 To open the Splitview, run the following in the browser console using your desired Pimcore IDs:
 > new pimcore.object.splitview(id1, id2);
+
+![Example Image](/public/imagesdemo-image.png)
+
+## To-DO
+- [ ] Add Warning if Object is already openend in Splitview
+
+## Known Issues
+- If object gets openend again admin ui must be reloaded
+- Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"

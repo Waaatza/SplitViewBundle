@@ -19,7 +19,8 @@ class WatzaSplitViewBundle extends AbstractPimcoreBundle implements PimcoreBundl
     {
         return [
             '/bundles/watzasplitview/js/pimcore/startup.js',
-            '/bundles/watzasplitview/js/pimcore/splitview.js'
+            '/bundles/watzasplitview/js/pimcore/splitview.js',
+            '/bundles/watzasplitview/js/pimcore/splitviewmenu.js'
         ];
     }
 
