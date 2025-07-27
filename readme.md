@@ -18,7 +18,7 @@ Add "Watza\SplitViewBundle\WatzaSplitViewBundle::class => ['all' => true]," to r
 To open the Splitview, run the following in the browser console using your desired Pimcore IDs:
 > new pimcore.object.splitview(id1, id2);
 
-Second Method: Right Click on Object in Tabbar to add it to SplitView
+Second Method: Right Click on an Object in the Tabbar to add it to SplitView Tab
 
 ![Example Image](./public/images/demo-image.png)
 

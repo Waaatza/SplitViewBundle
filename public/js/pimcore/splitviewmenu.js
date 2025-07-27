@@ -29,6 +29,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
         });
 
         tabPanel.on("add", (container, tab) => {
+            console.log("[DEBUG] Neuer Tab hinzugefügt:", tab.id);
             this.attachContextMenuToTab(tab, tabPanel);
         });
 
@@ -40,34 +41,49 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
     attachContextMenuToTab: function (tab, tabPanel) {
         if (!tab.id || !tab.id.startsWith("object_")) return;
 
-        Ext.defer(() => {
-            const tabHeader = tab.tab?.el;
-            if (!tabHeader) return;
+        const tabCmp = tab.tab;
+        if (!tabCmp || tabCmp._watzaContextBound) return;
+        tabCmp._watzaContextBound = true;
 
-            if (tabHeader._watzaContextBound) return;
-            tabHeader._watzaContextBound = true;
+        tabCmp.on("afterrender", () => {
+            tabCmp.el.on("contextmenu", (e) => {
+                e.stopEvent();
 
-            tabHeader.on("contextmenu", (event) => {
-                event.stopEvent();
-
-                let originalMenu = tab.tab?.menu;
-
-                if (!originalMenu) {
-                    originalMenu = new Ext.menu.Menu();
-                    tab.tab.menu = originalMenu;
+                if (!tabCmp.menu) {
+                    tabCmp.showMenu(e);
                 }
 
-                if (!originalMenu.items.findBy(i => i.text === "In Splitview öffnen…")) {
-                    originalMenu.add({
-                        text: "In Splitview öffnen…",
-                        iconCls: "pimcore_icon_object",
-                        handler: () => this.handleSplitviewClick(tab, tabPanel)
+                let menu = tabCmp.menu;
+
+                if (!menu) {
+                    console.warn("[DEBUG] Tab hat kein eigenes Menü → wir erstellen eines");
+                    menu = Ext.create("Ext.menu.Menu", {
+                        items: []
+                    });
+                    tabCmp.menu = menu;
+                }
+
+                if (!menu._watzaHooked) {
+                    menu._watzaHooked = true;
+
+                    menu.on("beforeshow", () => {
+                        if (!menu.items.findBy(i => i.text === "In Splitview öffnen…")) {
+                            console.log("[DEBUG] → Füge Splitview-Menüeintrag hinzu");
+
+                            if (menu.items.length > 0) menu.add('-');
+
+                            menu.add({
+                                text: "In Splitview öffnen…",
+                                iconCls: "pimcore_icon_object",
+                                handler: () => this.handleSplitviewClick(tab, tabPanel)
+                            });
+                        }
                     });
                 }
 
-                originalMenu.showAt(event.getXY());
+                menu.showAt(e.getXY());
             });
-        }, 300);
+        });
     },
 
     handleSplitviewClick: function (tab, tabPanel) {
