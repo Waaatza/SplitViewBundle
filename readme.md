@@ -1,4 +1,4 @@
-# SplitviewBundle for Pimcore
+# SplitViewBundle for Pimcore 11
 
 This Bundle allows opening multiple Objects in the Pimcore ExtJs Admin UI. The installation follows the Standard Symfony/Pimcore-Bundle installation.
 
