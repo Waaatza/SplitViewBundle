@@ -27,8 +27,3 @@ Second method: Right click on an Object in the tabbar to add it to SplitView Tab
 - [x] Add Option for multiple SplitViews
 - [x] Add Warning if Object is already openend in Splitview
 - [ ] Option to add more than two Objects to single Splitview
-
-## Known Issues
-- [x] Closing the Splitview also shows Modal "Object is already opened in Splitview"
-- [ ] Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"
-- [ ] After closing the Splitview, the object must be reloaded to have the full editor space
