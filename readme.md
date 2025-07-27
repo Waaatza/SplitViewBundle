@@ -1,6 +1,6 @@
 # SplitViewBundle for Pimcore 11
 
-This Bundle allows opening multiple Objects in the Pimcore ExtJs Admin UI. 
+This Bundle allows opening multiple Objects in the Pimcore ExtJs Admin UI. Ideal for use one ultrawide Monitors without opening multiple Pimcore instances.
 
 ## Installation
 The installation follows the Standard Symfony/Pimcore-Bundle installation. 
@@ -29,6 +29,6 @@ Second Method: Right Click on Object in Tabbar to add it to SplitView
 - [ ] Option to add more than two Objects to Splitview
 
 ## Known Issues
-- [ ] Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"
 - [x] Closing the Splitview also shows Modal "Object is already opened in Splitview"
+- [ ] Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"
 - [ ] After closing the splitview, the object must be reloaded to have the full space
