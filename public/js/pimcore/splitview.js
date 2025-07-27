@@ -3,7 +3,7 @@ pimcore.registerNS("pimcore.object.splitview");
 pimcore.object.splitview = Class.create({
 
     initialize: function (idLeft, idRight) {
-        console.log("[Splitview] Init splitview für Tabs:", idLeft, idRight);
+        console.log("[Splitview] Init für Tabs:", idLeft, idRight);
 
         this.idLeft = idLeft;
         this.idRight = idRight;
@@ -40,7 +40,6 @@ pimcore.object.splitview = Class.create({
         const isReady = (tab) => {
             const el = tab.getEl()?.dom;
             if (!el) return false;
-
             return el.querySelector(
                 ".objectlayout_element_Layout, " +
                 ".objectlayout_element_tabpanel, " +
@@ -57,7 +56,6 @@ pimcore.object.splitview = Class.create({
                 console.log("[Splitview] ✅ Beide React-Editoren sind jetzt gerendert");
                 callback();
             } else {
-                console.log("[Splitview] ⏳ Warte weiter auf React-Editor Rendering …");
                 Ext.defer(check, 300);
             }
         };
@@ -71,32 +69,20 @@ pimcore.object.splitview = Class.create({
         }
 
         let toolbarPanel = tab.items.getAt(0);
-        console.log("[Splitview] ✅ Toolbar erkannt:", toolbarPanel?.id);
-
-        let editorPanel = null;
-        if (tab.items.length > 1) {
-            editorPanel = tab.items.getAt(1);
-            console.log("[Splitview] ✅ Editor-Panel erkannt:", editorPanel?.id);
-        }
+        let editorPanel = (tab.items.length > 1) ? tab.items.getAt(1) : null;
 
         let wrapperItems = [];
         if (toolbarPanel) wrapperItems.push(toolbarPanel);
         if (editorPanel) wrapperItems.push(editorPanel);
 
-        let wrapper = new Ext.Panel({
-            layout: {
-                type: "vbox",
-                align: "stretch"
-            },
+        return new Ext.Panel({
+            layout: { type: "vbox", align: "stretch" },
             items: wrapperItems
         });
-
-        console.log("[Splitview] 🎯 Wrapper gebaut mit", wrapperItems.length, "Element(en)");
-        return wrapper;
     },
 
     buildSplitview: function () {
-        console.log("[Splitview] Beide Tabs geladen → baue Splitview…");
+        console.log("[Splitview] Baue Splitview…");
 
         const tabPanel = this.getMainTabPanel();
 
@@ -128,13 +114,12 @@ pimcore.object.splitview = Class.create({
                 { xtype: "container", layout: "fit", items: [rightLayout] }
             ],
             listeners: {
-                afterrender: function (cmp) {
-                    console.log("[Splitview] afterrender → Layout refresh");
+                afterrender: function () {
                     pimcore.layout.refresh();
                 },
                 close: () => {
-                    this.leftTab.add(leftLayout);   
-                    this.rightTab.add(rightLayout); 
+                    this.leftTab.add(leftLayout);
+                    this.rightTab.add(rightLayout);
                     this.leftTab.tab.show();
                     this.rightTab.tab.show();
                     tabPanel.setActiveTab(this.leftTab);
@@ -149,10 +134,7 @@ pimcore.object.splitview = Class.create({
         pimcore.layout.refresh();
 
         Ext.defer(() => {
-            console.log("[Splitview] 🔄 Forcing resize event for React editors");
             window.dispatchEvent(new Event("resize"));
         }, 200);
-
-        console.log("[Splitview] ✅ Splitview aktiv & Layout gestretcht");
     }
 });

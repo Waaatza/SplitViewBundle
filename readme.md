@@ -4,18 +4,22 @@ This Bundle allows opening multiple Objects in the Pimcore ExtJs Admin UI. The i
 
 Prerequisites: 
 - Both Objects are opened as Tabs
-- Pimcore > 11.5
+- Pimcore ≥ 11.5
 
 To open the Splitview, run the following in the browser console using your desired Pimcore IDs:
 > new pimcore.object.splitview(id1, id2);
 
+Second Method: Right Click on Object in Tabbar to add it to SplitView
 
 ![Example Image](./public/images/demo-image.png)
 
 ## To-Do
 - [x] Add Option to open Splitview in Admin UI
-- [ ] Add Warning if Object is already openend in Splitview
+- [x] Add Option for multiple SplitViews
+- [x] Add Warning if Object is already openend in Splitview
+- [ ] Option to add more than two Objects to Splitview
 
 ## Known Issues
-- If object gets openend again admin ui must be reloaded(?)
 - Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"
+- Closing the Splitview also shows Modal "Object is already opened in Splitview"
+- After closing the splitview, the object must be reloaded to have the full space
