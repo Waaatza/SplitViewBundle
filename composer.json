@@ -1,0 +1,22 @@
+{
+  "name": "watza/splitviewbundle",
+  "description": "Provides Splitscreen editing for DataObjects",
+  "type": "pimcore-bundle",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Watza\\SplitViewBundle\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=8.1",
+    "pimcore/pimcore": "^11.4"
+  },
+  "extra": {
+    "pimcore": {
+      "bundles": [
+        "Watza\\SplitViewBundle\\SplitViewBundle"
+      ]
+    }
+  }
+}
