@@ -12,7 +12,7 @@ To open the Splitview, run the following in the browser console using your desir
 
 ![Example Image](./public/images/demo-image.png)
 
-## To-DO
+## To-Do
 - [x] Add Option to open Splitview in Admin UI
 - [ ] Add Warning if Object is already openend in Splitview
 
