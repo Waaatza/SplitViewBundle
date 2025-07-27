@@ -29,6 +29,6 @@ Second Method: Right Click on Object in Tabbar to add it to SplitView
 - [ ] Option to add more than two Objects to Splitview
 
 ## Known Issues
-- Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"
-- Closing the Splitview also shows Modal "Object is already opened in Splitview"
-- After closing the splitview, the object must be reloaded to have the full space
+- [ ] Contextmenu *only* shows "Open in Splitview" instead e.g. "close all"
+- [x] Closing the Splitview also shows Modal "Object is already opened in Splitview"
+- [ ] After closing the splitview, the object must be reloaded to have the full space
