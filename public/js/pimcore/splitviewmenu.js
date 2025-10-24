@@ -29,7 +29,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
         });
 
         tabPanel.on("add", (container, tab) => {
-            console.log("[DEBUG] Neuer Tab hinzugefügt:", tab.id);
+            console.log("[SplitViewBundle: SplitViewMenu] Neuer Tab hinzugefügt:", tab.id);
             this.attachContextMenuToTab(tab, tabPanel);
         });
 
@@ -56,7 +56,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 let menu = tabCmp.menu;
 
                 if (!menu) {
-                    console.warn("[DEBUG] Tab hat kein eigenes Menü → wir erstellen eines");
+                    console.warn("[SplitViewBundle: SplitViewMenu] Tab hat kein eigenes Menü → wir erstellen eines");
                     menu = Ext.create("Ext.menu.Menu", {
                         items: []
                     });
@@ -68,7 +68,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
                     menu.on("beforeshow", () => {
                         if (!menu.items.findBy(i => i.text === "In Splitview öffnen…")) {
-                            console.log("[DEBUG] → Füge Splitview-Menüeintrag hinzu");
+                            console.log("[SplitViewBundle: SplitViewMenu] → Füge Splitview-Menüeintrag hinzu");
 
                             if (menu.items.length > 0) menu.add('-');
 
@@ -87,15 +87,15 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
     },
 
     handleSplitviewClick: function (tab, tabPanel) {
-        console.log("[DEBUG] handleSplitviewClick → Tab:", tab?.id);
+        console.log("[SplitViewBundle: SplitViewMenu] handleSplitviewClick → Tab:", tab?.id);
 
         let allTabsMC = tabPanel.items.filter(t => t && t.id && t.id.startsWith("object_"));
         let allTabs = allTabsMC?.toArray ? allTabsMC.toArray() : Array.from(allTabsMC?.items || []);
 
-        console.log("[DEBUG] Aktuell offene Objekt-Tabs:", allTabs.map(t => t.id));
+        console.log("[SplitViewBundle: SplitViewMenu] Aktuell offene Objekt-Tabs:", allTabs.map(t => t.id));
 
         if (allTabs.length < 2) {
-            console.warn("[DEBUG] Zu wenige Tabs für Splitview");
+            console.warn("[SplitViewBundle: SplitViewMenu] Zu wenige Tabs für Splitview");
             pimcore.helpers.showNotification("Info", "Es müssen mindestens zwei Objekt-Tabs geöffnet sein.");
             return;
         }
@@ -104,25 +104,25 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
         const activeTab = tabPanel.getActiveTab();
 
         if (!activeTab || !activeTab.id.startsWith("object_")) {
-            console.warn("[DEBUG] Kein aktiver Objekt-Tab");
+            console.warn("[SplitViewBundle: SplitViewMenu] Kein aktiver Objekt-Tab");
             pimcore.helpers.showNotification("Info", "Bitte wähle zuerst einen anderen Objekt-Tab aus.");
             return;
         }
 
         const activeId = activeTab.id.replace("object_", "");
         if (clickedId === activeId) {
-            console.warn("[DEBUG] Gleicher Tab gewählt");
+            console.warn("[SplitViewBundle: SplitViewMenu] Gleicher Tab gewählt");
             pimcore.helpers.showNotification("Info", "Bitte wähle zwei unterschiedliche Objekte.");
             return;
         }
 
         if (this.isSplitviewAlreadyOpen(clickedId, activeId)) {
-            console.warn("[DEBUG] Splitview bereits offen:", clickedId, activeId);
+            console.warn("[SplitViewBundle: SplitViewMenu] Splitview bereits offen:", clickedId, activeId);
             pimcore.helpers.showNotification("Info", "Diese Splitview ist bereits geöffnet.");
             return;
         }
 
-        console.log("[DEBUG] Öffne Splitview mit:", clickedId, activeId);
+        console.log("[SplitViewBundle: SplitViewMenu] Öffne Splitview mit:", clickedId, activeId);
 
         new pimcore.object.splitview(clickedId, activeId);
         pimcore.object.splitviewOpen.push({ left: clickedId, right: activeId });
@@ -133,19 +133,19 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
         Ext.defer(() => {
             const lastAdded = mainPanel.items.last();
-            console.log("[DEBUG] Letzter hinzugefügter Panel (Splitview?)", lastAdded?.title);
+            console.log("[SplitViewBundle: SplitViewMenu] Letzter hinzugefügter Panel (Splitview?)", lastAdded?.title);
 
             if (!lastAdded) return;
 
             lastAdded.on("beforeclose", () => {
-                console.log("[DEBUG] beforeclose → entferne Detached direkt");
+                console.log("[SplitViewBundle: SplitViewMenu] beforeclose → entferne Detached direkt");
                 pimcore.object.splitviewDetached.delete(clickedId);
                 pimcore.object.splitviewDetached.delete(activeId);
                 return true;
             });
 
             lastAdded.on("close", () => {
-                console.log("[DEBUG] close Event für Splitview → entferne Detached", clickedId, activeId);
+                console.log("[SplitViewBundle: SplitViewMenu] close Event für Splitview → entferne Detached", clickedId, activeId);
 
                 pimcore.object.splitviewDetached.delete(clickedId);
                 pimcore.object.splitviewDetached.delete(activeId);
@@ -160,13 +160,13 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 const clickedTab = mainPanel.items.find(t => t?.id === `object_${clickedId}`);
                 const activeObjTab = mainPanel.items.find(t => t?.id === `object_${activeId}`);
 
-                console.log("[DEBUG] Tabs nach Close wieder aktiv:", clickedTab?.id, activeObjTab?.id);
+                console.log("[SplitViewBundle: SplitViewMenu] Tabs nach Close wieder aktiv:", clickedTab?.id, activeObjTab?.id);
 
                 if (clickedTab?.reload) clickedTab.reload();
                 if (activeObjTab?.reload) activeObjTab.reload();
 
                 Ext.defer(() => {
-                    console.log("[DEBUG] doLayout nach Close");
+                    console.log("[SplitViewBundle: SplitViewMenu] doLayout nach Close");
                     mainPanel.updateLayout();
                 }, 200);
             });
@@ -180,7 +180,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 (entry.left === idB && entry.right === idA)
             );
         });
-        console.log("[DEBUG] isSplitviewAlreadyOpen?", idA, idB, "→", open);
+        console.log("[SplitViewBundle: SplitViewMenu] isSplitviewAlreadyOpen?", idA, idB, "→", open);
         return open;
     }
 });
