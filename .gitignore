@@ -1,1 +1,3 @@
 _trash
+/vendor
+public/js/pimcore/debug.js
