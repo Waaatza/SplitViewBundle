@@ -7,8 +7,9 @@ pimcore.plugin.WatzaDebugBundle = Class.create({
     },
 
     pimcoreReady: function (e) {
-        alert("WatzaDebugBundle ready!");
+        //alert("WatzaDebugBundle ready!");
         console.log(e);
+        console.log(pimcore);
     }
 });
 
