@@ -18,6 +18,7 @@ class WatzaSplitViewBundle extends AbstractPimcoreBundle implements PimcoreBundl
     public function getJsPaths(): array
     {
         return [
+            '/bundles/watzasplitview/js/pimcore/debug.js',
             '/bundles/watzasplitview/js/pimcore/splitview.js',
             '/bundles/watzasplitview/js/pimcore/splitviewmenu.js'
         ];
