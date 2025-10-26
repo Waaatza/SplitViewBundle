@@ -26,17 +26,6 @@ Watza\SplitViewBundle\WatzaSplitViewBundle::class => ['all' => true],
 ### Requirements
 - Pimcore 11.4 or higher
 
-## Quick Start
-
-Open multiple objects in your Pimcore Admin UI in two steps:
-
-```javascript
-// Example: Open objects with IDs 1 and 2
-new pimcore.object.splitview(1, 2);
-```
-
-Or right-click on any object in the tab bar and select **"Open in SplitView"**.
-
 ## Usage
 
 ### Method 1: Browser Console

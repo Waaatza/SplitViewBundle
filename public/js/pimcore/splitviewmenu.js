@@ -6,7 +6,6 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
         pimcore.object.splitviewOpen = pimcore.object.splitviewOpen || [];
         pimcore.object.splitviewDetached = pimcore.object.splitviewDetached || new Set();
 
-        // Flag for ongoing splitview closing
         this._watzaSplitviewClosing = false;
 
         this.defineSplitviewClass();
@@ -66,7 +65,6 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
             findEditorLayout: function(tab) {
                 if (!tab || !tab.items || tab.items.length === 0) return null;
 
-                // Clone content + toolbar
                 const layoutItems = [];
                 tab.items.each(item => layoutItems.push(item));
 
@@ -89,11 +87,9 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
                 if (!leftLayout || !rightLayout) return;
 
-                // Store original layouts
                 this.leftTab._originalLayout  = leftLayout;
                 this.rightTab._originalLayout = rightLayout;
 
-                // Hide tabs but do not remove layouts
                 this.leftTab.tab.hide();
                 this.rightTab.tab.hide();
 
@@ -109,7 +105,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 const rightPanel = scrollContainer(rightLayout);
 
                 const splitPanel = new Ext.Panel({
-                    title: `Splitview: ${this.idLeft} ↔ ${this.idRight}`,
+                    title: `${t("splitview.open_in_splitview")}: ${this.idLeft} | ${this.idRight}`,
                     iconCls: "pimcore_icon_object",
                     closable: true,
                     layout: { type: "hbox", align: "stretch" },
@@ -130,11 +126,9 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
                             const tabPanel = this.getMainTabPanel();
 
-                            // Completely close old tabs
                             if (this.leftTab) tabPanel.remove(this.leftTab, true);
                             if (this.rightTab) tabPanel.remove(this.rightTab, true);
 
-                            // Reopen objects
                             pimcore.helpers.openObject(this.idLeft);
                             pimcore.helpers.openObject(this.idRight);
 
@@ -161,19 +155,12 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
             const objId = newTab.id.replace("object_", "");
 
-            // If a splitview is currently being closed → do not block
             if (bundle._watzaSplitviewClosing || newTab._watzaClosing) return true;
 
-            // Only block if the object is currently in an open splitview
             if (pimcore.object.splitviewDetached.has(objId)) {
-                // Check if the tab is currently **being reopened** (e.g., after splitview closing)
-                const wasSplitviewClosed = bundle._watzaSplitviewClosing;
-                if (wasSplitviewClosed) {
-                    return true; // Tab can switch, no alert
-                }
                 Ext.Msg.alert(
-                    "Info",
-                    "This object is currently opened in a splitview.<br>Please close the splitview first."
+                    t("splitview.object_open_in_another_splitview_title"),
+                    t("splitview.object_open_in_another_splitview_message")
                 );
                 return false;
             }
@@ -207,10 +194,10 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 if (!menu._watzaHooked) {
                     menu._watzaHooked = true;
                     menu.on("beforeshow", () => {
-                        if (!menu.items.findBy(i => i.text === "Open in Splitview…")) {
+                        if (!menu.items.findBy(i => i.text === t("splitview.open_in_splitview"))) {
                             if (menu.items.length > 0) menu.add('-');
                             menu.add({
-                                text: "Open in Splitview…",
+                                text: t("splitview.open_in_splitview"),
                                 iconCls: "pimcore_icon_object",
                                 handler: () => this.handleSplitviewClick(tab, tabPanel)
                             });
@@ -224,7 +211,6 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
     },
 
     handleSplitviewClick: function(tab, tabPanel) {
-       // Check if the Welcome Screen is still open
         const welcomeTab = Array.from(tabPanel.items.items)
             .find(t => {
                 const tabEl = t.tab?.el?.dom;
@@ -234,33 +220,33 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
         if (welcomeTab) {
             Ext.Msg.alert(
-                "Info",
-                "Please close the Welcome Screen or Dashboard first before opening a splitview."
+                t("splitview.object_open_in_another_splitview_title"),
+                t("splitview.welcome_open_message")
             );
             return;
         }
 
         const allTabs = Array.from(tabPanel.items.items).filter(t => t && t.id && t.id.startsWith("object_"));
         if (allTabs.length < 2) {
-            pimcore.helpers.showNotification("Info", "At least two object tabs must be open.");
+            pimcore.helpers.showNotification("Info", t("splitview.at_least_two_tabs"));
             return;
         }
 
         const clickedId = tab.id.replace("object_", "");
         const activeTab = tabPanel.getActiveTab();
         if (!activeTab || !activeTab.id.startsWith("object_")) {
-            pimcore.helpers.showNotification("Info", "Please select another object tab first.");
+            pimcore.helpers.showNotification("Info", t("splitview.select_another_tab"));
             return;
         }
 
         const activeId = activeTab.id.replace("object_", "");
         if (clickedId === activeId) {
-            pimcore.helpers.showNotification("Info", "Please select two different objects.");
+            pimcore.helpers.showNotification("Info", t("splitview.select_two_different_objects"));
             return;
         }
 
         if (this.isSplitviewAlreadyOpen(clickedId, activeId)) {
-            pimcore.helpers.showNotification("Info", "This splitview is already open.");
+            pimcore.helpers.showNotification("Info", t("splitview.already_open"));
             return;
         }
 

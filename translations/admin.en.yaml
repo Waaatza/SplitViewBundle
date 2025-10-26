@@ -1,0 +1,9 @@
+splitview:
+    object_open_in_another_splitview_title: "Info"
+    object_open_in_another_splitview_message: "This object is currently opened in a splitview.<br>Please close the splitview first."
+    welcome_open_message: "Please close the Welcome Screen or Dashboard first before opening a splitview."
+    at_least_two_tabs: "At least two object tabs must be open."
+    select_another_tab: "Please select another object tab first."
+    select_two_different_objects: "Please select two different objects."
+    already_open: "This splitview is already open."
+    open_in_splitview: "Open in Splitview…"
