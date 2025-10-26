@@ -1,3 +1,4 @@
 _trash
 /vendor
 public/js/pimcore/debug.js
+public/js/pimcore/splitview.js
