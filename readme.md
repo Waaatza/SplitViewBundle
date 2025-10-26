@@ -24,12 +24,12 @@ Watza\SplitViewBundle\WatzaSplitViewBundle::class => ['all' => true],
 
 ## Quick Start
 
-Open multiple objects in your Pimcore Admin UI in just two steps:
+Open multiple objects in your Pimcore Admin UI in two steps:
 
 // Example: Open objects with IDs 1 and 2
 new pimcore.object.splitview(1, 2);
 
-Or right-click on any object in the tab bar and select "Add to SplitView".
+Or right-click on any object in the tab bar and select "Open in SplitView".
 
 ## Usage
 
@@ -41,7 +41,7 @@ new pimcore.object.splitview($id1, $id2);
 Replace $id1, $id2 with the object IDs you want to open.
 
 ### Method 2: Context Menu
-Right-click on an object in the tab bar -> Select "Add to SplitView".
+Right-click on an object in the tab bar -> Select "Open in SplitView".
 
 ![Context Menu](./public/images/splitview-context-menu.png)
 
