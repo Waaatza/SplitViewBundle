@@ -12,9 +12,9 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
     pimcoreReady: function () {
         const tabPanel = pimcore.viewport.down("tabpanel");
 
+        // Verhindere Wechsel zu bereits in Splitview geöffneten Objekten
         tabPanel.on("beforetabchange", (panel, newTab) => {
             if (!newTab?.id) return true;
-
             if (newTab.id.startsWith("object_")) {
                 const objId = newTab.id.replace("object_", "");
                 if (pimcore.object.splitviewDetached.has(objId)) {
@@ -28,18 +28,14 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
             return true;
         });
 
-        tabPanel.on("add", (container, tab) => {
-            console.log("[SplitViewBundle] Neuer Tab hinzugefügt:", tab.id);
-            this.attachContextMenuToTab(tab, tabPanel);
-        });
+        // Kontextmenü an bestehende Tabs anhängen
+        tabPanel.items.each(tab => this.attachContextMenuToTab(tab, tabPanel));
 
-        // Initiale Tabs (z. B. nach Reload)
-        tabPanel.items.each(tab => {
-            this.attachContextMenuToTab(tab, tabPanel);
-        });
+        // Kontextmenü an neue Tabs anhängen
+        tabPanel.on("add", (container, tab) => this.attachContextMenuToTab(tab, tabPanel));
     },
 
-    attachContextMenuToTab: function (tab, tabPanel) {
+    attachContextMenuToTab: function(tab, tabPanel) {
         if (!tab.id || !tab.id.startsWith("object_")) return;
 
         const tabCmp = tab.tab;
@@ -50,21 +46,16 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
             tabCmp.el.on("contextmenu", (e) => {
                 e.stopEvent();
 
-                if (!tabCmp.menu) {
-                    tabCmp.showMenu(e);
-                }
+                if (!tabCmp.menu) tabCmp.showMenu(e);
 
                 let menu = tabCmp.menu;
-
                 if (!menu) {
-                    console.warn("[SplitViewBundle] Tab hat kein Menü → erstellen");
                     menu = Ext.create("Ext.menu.Menu", { items: [] });
                     tabCmp.menu = menu;
                 }
 
                 if (!menu._watzaHooked) {
                     menu._watzaHooked = true;
-
                     menu.on("beforeshow", () => {
                         if (!menu.items.findBy(i => i.text === "In Splitview öffnen…")) {
                             if (menu.items.length > 0) menu.add('-');
@@ -82,29 +73,18 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
         });
     },
 
-    handleSplitviewClick: function (tab, tabPanel) {
-        console.log("[SplitViewBundle] handleSplitviewClick → Tab:", tab?.id);
-
-        let allTabsMC = tabPanel.items.filter(t => t && t.id && t.id.startsWith("object_"));
-        let allTabs = allTabsMC?.toArray ? allTabsMC.toArray() : Array.from(allTabsMC?.items || []);
-
+    handleSplitviewClick: function(tab, tabPanel) {
+        const allTabs = Array.from(tabPanel.items.items).filter(t => t && t.id && t.id.startsWith("object_"));
         if (allTabs.length < 2) {
             pimcore.helpers.showNotification("Info", "Es müssen mindestens zwei Objekt-Tabs geöffnet sein.");
             return;
         }
 
         const clickedId = tab.id.replace("object_", "");
-        let activeTab = tabPanel.getActiveTab();
-
-        // Welcome Screen Handling
+        const activeTab = tabPanel.getActiveTab();
         if (!activeTab || !activeTab.id.startsWith("object_")) {
-            const firstObjTab = tabPanel.items.find(t => t.id && t.id.startsWith("object_"));
-            if (!firstObjTab) {
-                pimcore.helpers.showNotification("Info", "Öffne zuerst ein Objekt.");
-                return;
-            }
-            activeTab = firstObjTab;
-            tabPanel.setActiveTab(firstObjTab);
+            pimcore.helpers.showNotification("Info", "Bitte wähle zuerst einen anderen Objekt-Tab aus.");
+            return;
         }
 
         const activeId = activeTab.id.replace("object_", "");
@@ -118,80 +98,65 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
             return;
         }
 
-        console.log("[SplitViewBundle] Öffne Splitview mit:", clickedId, activeId);
-
-        // Scrollable Panels sicherstellen
-        const leftPanel = Ext.create('Ext.panel.Panel', {
-            layout: 'fit',
-            scrollable: true,
-            border: false,
-            items: [pimcore.globalmanager.get(`object_${clickedId}`)]
-        });
-
-        const rightPanel = Ext.create('Ext.panel.Panel', {
-            layout: 'fit',
-            scrollable: true,
-            border: false,
-            items: [pimcore.globalmanager.get(`object_${activeId}`)]
-        });
-
-        const splitview = Ext.create('Ext.panel.Panel', {
-            layout: 'hbox',
-            title: `Splitview: ${clickedId} ↔ ${activeId}`,
-            closable: true,
-            items: [
-                { xtype: 'panel', flex: 1, layout: 'fit', scrollable: true, items: [leftPanel] },
-                { xtype: 'panel', flex: 1, layout: 'fit', scrollable: true, items: [rightPanel] }
-            ]
-        });
-
-        tabPanel.add(splitview);
-        tabPanel.setActiveTab(splitview);
-
+        // Neue Splitview erstellen
+        new pimcore.object.splitview(clickedId, activeId);
         pimcore.object.splitviewOpen.push({ left: clickedId, right: activeId });
         pimcore.object.splitviewDetached.add(clickedId);
         pimcore.object.splitviewDetached.add(activeId);
 
-        splitview.on("beforeclose", () => {
+        const lastAdded = tabPanel.items.last();
+        if (!lastAdded) return;
+
+        // Scrollbar & Layout für Splitview aktivieren
+        lastAdded.setLayout({ type: 'hbox', align: 'stretch' });
+
+        const children = lastAdded.query("panel");
+        children.forEach(child => {
+            child.setFlex(1);
+            child.setScrollable(true);
+        });
+
+        // Fieldsets beobachten
+        lastAdded.on("afterrender", () => {
+            const fieldsets = lastAdded.query("fieldset");
+            fieldsets.forEach(fs => {
+                fs.on("expand", () => lastAdded.updateLayout({ defer: 50 }));
+                fs.on("collapse", () => lastAdded.updateLayout({ defer: 50 }));
+            });
+        });
+
+        // Splitview Close-Handler
+        lastAdded.on("beforeclose", () => {
             pimcore.object.splitviewDetached.delete(clickedId);
             pimcore.object.splitviewDetached.delete(activeId);
             return true;
         });
 
-        splitview.on("close", () => {
-            console.log("[SplitViewBundle] Splitview geschlossen → cleanup");
+        lastAdded.on("close", () => {
             pimcore.object.splitviewDetached.delete(clickedId);
             pimcore.object.splitviewDetached.delete(activeId);
 
-            pimcore.object.splitviewOpen = pimcore.object.splitviewOpen.filter(entry => {
-                return !(
-                    (entry.left === clickedId && entry.right === activeId) ||
-                    (entry.left === activeId && entry.right === clickedId)
-                );
-            });
+            pimcore.object.splitviewOpen = pimcore.object.splitviewOpen.filter(entry =>
+                !((entry.left === clickedId && entry.right === activeId) || (entry.left === activeId && entry.right === clickedId))
+            );
 
+            // Original-Tabs neu laden
             const clickedTab = tabPanel.items.find(t => t?.id === `object_${clickedId}`);
             const activeObjTab = tabPanel.items.find(t => t?.id === `object_${activeId}`);
-
             if (clickedTab?.reload) clickedTab.reload();
             if (activeObjTab?.reload) activeObjTab.reload();
 
-            // vollständiges Relayout
-            Ext.defer(() => {
-                pimcore.viewport.doLayout();
-                tabPanel.updateLayout();
-            }, 300);
+            Ext.defer(() => tabPanel.updateLayout(), 200);
         });
     },
 
-    isSplitviewAlreadyOpen: function (idA, idB) {
-        return pimcore.object.splitviewOpen?.some(entry => {
-            return (
-                (entry.left === idA && entry.right === idB) ||
-                (entry.left === idB && entry.right === idA)
-            );
-        });
+    isSplitviewAlreadyOpen: function(idA, idB) {
+        return pimcore.object.splitviewOpen?.some(entry =>
+            (entry.left === idA && entry.right === idB) ||
+            (entry.left === idB && entry.right === idA)
+        );
     }
+
 });
 
 new pimcore.plugin.WatzaSplitViewBundle();
