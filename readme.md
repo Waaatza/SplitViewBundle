@@ -22,8 +22,3 @@ Second method: Right click on an Object in the tabbar to add it to SplitView Tab
 
 ![Example Image](./public/images/demo-image.png)
 
-## To-Do
-- [x] Add Option to open Splitview in Admin UI
-- [x] Add Option for multiple SplitViews
-- [x] Add Warning if Object is already openend in Splitview
-- [ ] Option to add more than two Objects to single Splitview

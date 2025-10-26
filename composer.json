@@ -1,6 +1,6 @@
 {
   "name": "watza/splitviewbundle",
-  "description": "Provides Splitscreen editing for DataObjects",
+  "description": "Provides Splitscreen editing for DataObjects (ideal for ultrawide monitors=",
   "type": "pimcore-bundle",
   "license": "GPL-3.0-or-later",
   "autoload": {
