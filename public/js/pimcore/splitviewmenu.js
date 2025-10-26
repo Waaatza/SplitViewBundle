@@ -224,6 +224,22 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
     },
 
     handleSplitviewClick: function(tab, tabPanel) {
+       // Prüfen, ob der Welcome Screen noch offen ist
+        const welcomeTab = Array.from(tabPanel.items.items)
+            .find(t => {
+                const tabEl = t.tab?.el?.dom;
+                const tabText = t.tab?.getText?.() || "";
+                return tabEl?.querySelector(".pimcore_icon_welcome") || tabText === "Welcome";
+            });
+
+        if (welcomeTab) {
+            Ext.Msg.alert(
+                "Info",
+                "Bitte schließe zuerst den Welcome Screen oder das Dashboard, bevor du eine Splitview öffnest."
+            );
+            return;
+        }
+
         const allTabs = Array.from(tabPanel.items.items).filter(t => t && t.id && t.id.startsWith("object_"));
         if (allTabs.length < 2) {
             pimcore.helpers.showNotification("Info", "Es müssen mindestens zwei Objekt-Tabs geöffnet sein.");
