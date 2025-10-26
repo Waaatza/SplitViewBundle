@@ -125,17 +125,18 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                             pimcore.object.splitviewDetached.delete(this.idRight);
                             pimcore.object.splitviewOpen = pimcore.object.splitviewOpen.filter(entry =>
                                 !((entry.left === this.idLeft && entry.right === this.idRight) ||
-                                  (entry.left === this.idRight && entry.right === this.idLeft))
+                                (entry.left === this.idRight && entry.right === this.idLeft))
                             );
 
                             const tabPanel = this.getMainTabPanel();
 
-                            // Original-Tabs wieder anzeigen
-                            if (this.leftTab) this.leftTab.tab.show();
-                            if (this.rightTab) this.rightTab.tab.show();
+                            // Alte Tabs komplett schließen
+                            if (this.leftTab) tabPanel.remove(this.leftTab, true);
+                            if (this.rightTab) tabPanel.remove(this.rightTab, true);
 
-                            const remainingTab = tabPanel.items.find(t => t.id && t.id.startsWith("object_"));
-                            if (remainingTab) tabPanel.setActiveTab(remainingTab);
+                            // Objekte neu öffnen
+                            pimcore.helpers.openObject(this.idLeft);
+                            pimcore.helpers.openObject(this.idRight);
 
                             Ext.defer(() => {
                                 pimcore.layout.refresh();
@@ -160,9 +161,16 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
             const objId = newTab.id.replace("object_", "");
 
+            // Wenn gerade eine Splitview geschlossen wird → nichts blocken
             if (bundle._watzaSplitviewClosing || newTab._watzaClosing) return true;
 
+            // Nur blocken, wenn das Objekt aktuell in einer offenen Splitview ist
             if (pimcore.object.splitviewDetached.has(objId)) {
+                // Prüfen, ob der Tab gerade **neu geöffnet wird** (z.B. nach Splitview-Schließen)
+                const wasSplitviewClosed = bundle._watzaSplitviewClosing;
+                if (wasSplitviewClosed) {
+                    return true; // Tab darf wechseln, keine Meldung
+                }
                 Ext.Msg.alert(
                     "Info",
                     "Dieses Objekt ist derzeit in einer Splitview geöffnet.<br>Bitte schließe die Splitview zuerst."
