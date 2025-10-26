@@ -7,3 +7,4 @@ splitview:
     select_two_different_objects: "Bitte wähle zwei unterschiedliche Objekte."
     already_open: "Diese Splitview ist bereits geöffnet."
     open_in_splitview: "In Splitview öffnen…"
+    splitview: "Splitview"

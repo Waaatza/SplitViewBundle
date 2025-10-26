@@ -105,7 +105,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 const rightPanel = scrollContainer(rightLayout);
 
                 const splitPanel = new Ext.Panel({
-                    title: `${t("splitview.open_in_splitview")}: ${this.idLeft} | ${this.idRight}`,
+                    title: `${t("splitview.splitview")}: ${this.idLeft} | ${this.idRight}`,
                     iconCls: "pimcore_icon_object",
                     closable: true,
                     layout: { type: "hbox", align: "stretch" },
