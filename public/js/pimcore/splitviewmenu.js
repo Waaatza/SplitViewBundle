@@ -66,13 +66,18 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
             findEditorLayout: function(tab) {
                 if (!tab || !tab.items || tab.items.length === 0) return null;
 
-                let wrapperItems = [];
-                if (tab.items.getAt(0)) wrapperItems.push(tab.items.getAt(0));
-                if (tab.items.length > 1) wrapperItems.push(tab.items.getAt(1));
+                // Inhalt + Toolbar klonen
+                const layoutItems = [];
+                tab.items.each(item => layoutItems.push(item));
+
+                const dockedToolbars = tab.dockedItems
+                    ? tab.dockedItems.items.filter(d => d.dock === "top")
+                    : [];
 
                 return new Ext.Panel({
                     layout: { type: "vbox", align: "stretch" },
-                    items: wrapperItems
+                    dockedItems: dockedToolbars.map(tb => tb.cloneConfig()),
+                    items: layoutItems
                 });
             },
 
@@ -88,9 +93,7 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                 this.leftTab._originalLayout  = leftLayout;
                 this.rightTab._originalLayout = rightLayout;
 
-                // Original-Tabs ausblenden, ohne Events zu triggern
-                this.leftTab.remove(leftLayout, false);
-                this.rightTab.remove(rightLayout, false);
+                // Tabs verstecken, aber Layouts nicht entfernen
                 this.leftTab.tab.hide();
                 this.rightTab.tab.hide();
 
@@ -115,46 +118,30 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
                     listeners: {
                         afterrender: () => pimcore.layout.refresh(),
                         close: () => {
-    const bundle = pimcore.plugin.WatzaSplitViewBundle;
+                            const bundle = pimcore.plugin.WatzaSplitViewBundle;
+                            bundle._watzaSplitviewClosing = true;
 
-    // Flag sofort setzen
-    bundle._watzaSplitviewClosing = true;
+                            pimcore.object.splitviewDetached.delete(this.idLeft);
+                            pimcore.object.splitviewDetached.delete(this.idRight);
+                            pimcore.object.splitviewOpen = pimcore.object.splitviewOpen.filter(entry =>
+                                !((entry.left === this.idLeft && entry.right === this.idRight) ||
+                                  (entry.left === this.idRight && entry.right === this.idLeft))
+                            );
 
-    // Splitview-Status löschen
-    pimcore.object.splitviewDetached.delete(this.idLeft);
-    pimcore.object.splitviewDetached.delete(this.idRight);
-    pimcore.object.splitviewOpen = pimcore.object.splitviewOpen.filter(entry =>
-        !((entry.left === this.idLeft && entry.right === this.idRight) ||
-          (entry.left === this.idRight && entry.right === this.idLeft))
-    );
+                            const tabPanel = this.getMainTabPanel();
 
-    const tabPanel = this.getMainTabPanel();
+                            // Original-Tabs wieder anzeigen
+                            if (this.leftTab) this.leftTab.tab.show();
+                            if (this.rightTab) this.rightTab.tab.show();
 
-    // Original-Panels wieder einsetzen
-    if (this.leftTab && this.leftTab._originalLayout) {
-        this.leftTab.removeAll();
-        this.leftTab.add(this.leftTab._originalLayout);
-        this.leftTab.tab.show();
-        this.leftTab.updateLayout({ defer: true });
-    }
-    if (this.rightTab && this.rightTab._originalLayout) {
-        this.rightTab.removeAll();
-        this.rightTab.add(this.rightTab._originalLayout);
-        this.rightTab.tab.show();
-        this.rightTab.updateLayout({ defer: true });
-    }
+                            const remainingTab = tabPanel.items.find(t => t.id && t.id.startsWith("object_"));
+                            if (remainingTab) tabPanel.setActiveTab(remainingTab);
 
-    // Aktiviere erstes verfügbares Objekt-Tab
-    const remainingTab = tabPanel.items.find(t => t.id && t.id.startsWith("object_"));
-    if (remainingTab) tabPanel.setActiveTab(remainingTab);
-
-    // Layout refresh & Flag zurücksetzen nach kurzem Delay
-    Ext.defer(() => {
-        pimcore.layout.refresh();
-        bundle._watzaSplitviewClosing = false;
-    }, 100);
-}
-
+                            Ext.defer(() => {
+                                pimcore.layout.refresh();
+                                bundle._watzaSplitviewClosing = false;
+                            }, 100);
+                        }
                     }
                 });
 
@@ -173,7 +160,6 @@ pimcore.plugin.WatzaSplitViewBundle = Class.create({
 
             const objId = newTab.id.replace("object_", "");
 
-            // Hinweis unterdrücken, wenn Splitview gerade geschlossen wird
             if (bundle._watzaSplitviewClosing || newTab._watzaClosing) return true;
 
             if (pimcore.object.splitviewDetached.has(objId)) {
