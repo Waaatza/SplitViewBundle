@@ -13,11 +13,15 @@ The Watza SplitViewBundle allows you to open multiple objects simultaneously in 
 
 1. Install via Composer:
 
+```bash
 composer require watza/splitviewbundle:dev-master
+```
 
-2. Enable the bundle in bundles.php by adding:
+2. Enable the bundle in `bundles.php` by adding:
 
+```php
 Watza\SplitViewBundle\WatzaSplitViewBundle::class => ['all' => true],
+```
 
 ### Requirements
 - Pimcore 11.4 or higher
@@ -26,26 +30,31 @@ Watza\SplitViewBundle\WatzaSplitViewBundle::class => ['all' => true],
 
 Open multiple objects in your Pimcore Admin UI in two steps:
 
+```javascript
 // Example: Open objects with IDs 1 and 2
 new pimcore.object.splitview(1, 2);
+```
 
-Or right-click on any object in the tab bar and select "Open in SplitView".
+Or right-click on any object in the tab bar and select **"Open in SplitView"**.
 
 ## Usage
 
 ### Method 1: Browser Console
+
 Use the console command to open any combination of objects:
 
+```javascript
+// Replace $id1, $id2 with the object IDs you want to open
 new pimcore.object.splitview($id1, $id2);
-
-Replace $id1, $id2 with the object IDs you want to open.
+```
 
 ### Method 2: Context Menu
-Right-click on an object in the tab bar -> Select "Open in SplitView".
+
+Right-click on an object in the tab bar → Select **"Open in SplitView"**.
 
 ![Context Menu](./public/images/splitview-context-menu.png)
 
 ## Disclaimer
 - This bundle is actively developed and may change at any time.
 - Recommended for experimental or personal use only.
-- Bundle Functionality may break after running composer update.
+- Bundle functionality may break after running `composer update`.
