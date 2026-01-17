@@ -1,4 +1,4 @@
-# Watza SplitViewBundle for Pimcore 11
+# SplitViewBundle for Pimcore 11
 
 The Watza SplitViewBundle allows you to open multiple objects simultaneously in tabs, perfect for ultrawide monitors or power users who need to work efficiently without launching multiple Pimcore instances.
 
