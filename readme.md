@@ -24,7 +24,7 @@ Watza\SplitViewBundle\WatzaSplitViewBundle::class => ['all' => true],
 ```
 
 ### Requirements
-- Pimcore 11.4 or higher
+- Pimcore 11 or higher
 
 ## Usage
 
