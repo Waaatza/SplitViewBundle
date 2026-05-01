@@ -1,7 +1,7 @@
 # SplitViewBundle for Pimcore 11
 
 ⚠️ DEPRECATED
-This plugin is deprecated due to Depraction of Pimcore Admin Ui and Splitviews working natively in Pimcore Studio UI.
+This plugin is deprecated due to depraction of Pimcore Admin Ui and Splitviews working natively in Pimcore Studio UI.
 
 ---
 
