@@ -1,5 +1,10 @@
 # SplitViewBundle for Pimcore 11
 
+⚠️ DEPRECATED
+This plugin is deprecated due to Depraction of Pimcore Admin Ui and Splitviews working natively in Pimcore Studio UI.
+
+---
+
 The Watza SplitViewBundle allows you to open multiple objects simultaneously in tabs, perfect for ultrawide monitors or power users who need to work efficiently without launching multiple Pimcore instances.
 
 ## Key Features
