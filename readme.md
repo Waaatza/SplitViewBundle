@@ -49,6 +49,4 @@ Right-click on an object in the tab bar → Select **"Open in SplitView"**.
 ![Context Menu](./public/images/splitview-context-menu.png)
 
 ## Disclaimer
-- This bundle is actively developed and may change at any time.
 - Recommended for experimental or personal use only.
-- Bundle functionality may break after running `composer update`.
